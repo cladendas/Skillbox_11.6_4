@@ -1,6 +1,17 @@
 #include <iostream>
 
-//сравнение символов
+char checkQQQ(char wonChar, int countX, int countO) {
+    if (wonChar == 'X' && countX > countO) {
+        return wonChar;
+    } else if (wonChar == 'O' && countX == countO) {
+        return wonChar;
+    } else if (wonChar == 'I' || (wonChar == 'X' && countX == countO) || (wonChar == 'O' && countX != countO)) {
+        wonChar = 'I';
+        return wonChar;
+    }
+}
+
+//сравнение символов: вернёт победителя
 char compare(char symF, char symS, char symT) {
     char wonChar = 'N';
     if (symF == 'X' && symS == 'X' && symT == 'X') {
@@ -11,10 +22,21 @@ char compare(char symF, char symS, char symT) {
     return wonChar;
 }
 
+//подсчёт кол-ва симоволов в строке
+int countSym(std::string str, char sym) {
+    int count = 0;
+    for (int i : str) {
+        if (i == sym) {
+            count++;
+        }
+    }
+    return count;
+}
+
 //проверка на кол-во побед в игре и определение победителя
 char checkWin(int countX, int countO) {
     char wonChar = 'N';
-    if (countX > 1 || countO > 1 || ((countX == countO) && countX != 0)) {
+    if (countX > 1 || countO > 1 || ((countX == countO) && countX == 1)) {
         wonChar = 'I';
     } else if (countX == 1) {
         wonChar = 'X';
@@ -28,58 +50,73 @@ char checkWin(int countX, int countO) {
 char checkDiag(std::string str) {
     char wonChar;
     //кол-во побед Х
-    int countX = 0;
+    int countXWin = 0;
     //кол-во побед О
-    int countO = 0;
+    int countOWin = 0;
+    //кол-во Х
+    int countX = countSym(str, 'X');
+    //кол-во О
+    int countO = countSym(str, 'O');
 
     for (int i = 0; i <= 2; i += 2) {
         if (i == 0) {
             char tmp = compare(str[i], str[i + 4], str[i + 8]);
             if (tmp == 'X') {
-                countX++;
+                countXWin++;
             } else if (tmp == 'O') {
-                countO++;
+                countOWin++;
             }
         }
         if (i == 2) {
             char tmp = compare(str[i], str[i + 2], str[i + 4]);
             if (tmp == 'X') {
-                countX++;
+                countXWin++;
             } else if (tmp == 'O') {
-                countO++;
+                countOWin++;
             }
         }
     }
-    wonChar = checkWin (countX, countO);
-    return wonChar;
+    wonChar = checkWin (countXWin, countOWin);
+    char ss = checkQQQ(wonChar, countX, countO);
+    return ss;
 }
 
 //проверка столбцов на победителя
 char checkWonCol(std::string str) {
     char wonChar;
     //кол-во побед Х
-    int countX = 0;
+    int countXWin = 0;
     //кол-во побед О
-    int countO = 0;
+    int countOWin = 0;
+    //кол-во Х
+    int countX = countSym(str, 'X');
+    //кол-во О
+    int countO = countSym(str, 'O');
     for (int i = 0; i < 3; i++) {
-        char tmp = compare(str[i], str[i + 4], str[i + 8]);
+        char tmp = compare(str[i], str[i + 3], str[i + 6]);
         if (tmp == 'X') {
-            countX++;
+            countXWin++;
         } else if (tmp == 'O') {
-            countO++;
+            countOWin++;
         }
     }
-    wonChar = checkWin (countX, countO);
-    return wonChar;
+
+    wonChar = checkWin (countXWin, countOWin);
+
+    return checkQQQ(wonChar, countX, countO);
 }
 
 //проверка строки на победителя
 char checkWonStr(std::string str) {
     char wonChar;
     //кол-во побед Х
-    int countX = 0;
+    int countXWin = 0;
     //кол-во побед О
-    int countO = 0;
+    int countOWin = 0;
+    //кол-во Х
+    int countX = countSym(str, 'X');
+    //кол-во О
+    int countO = countSym(str, 'O');
     for (int i = 0; i <= 6 ; i += 3) {
         char tmp = compare(str[i], str[i + 4], str[i + 8]);
         if (tmp == 'X') {
@@ -88,38 +125,30 @@ char checkWonStr(std::string str) {
             countO++;
         }
     }
-    wonChar = checkWin (countX, countO);
-    return wonChar;
+    wonChar = checkWin (countXWin, countOWin);
+
+    return checkQQQ(wonChar, countX, countO);
 }
 
 //проверка строки на общие требования
 bool checkStringTotal(std::string str) {
     //кол-во Х
-    int countX = 0;
+    int countX = countSym(str, 'X');
     //кол-во О
-    int countO = 0;
-    if (str.length() != 9) {
+    int countO = countSym(str, 'O');
+    if (str.length() != 9 || countX < countO) { //не более 9 символов, кол-во Х должно быть больше или равно кол-ву О
         return false;
     } else {
         for (char i : str) { //сравниваем введённые символы с допустимыми символами
-            if (i == 'X') {
-                countX++;
-            } else if (i == 'O') {
-                countO++;
-            } else if (i != '.') {
+            if (i != 'X' && i != 'O' && i != '.') {
                 return false;
             }
-        }
-
-        if (countX < countO) { //кол-во Х должно быть больше или равно кол-ву О
-            return false;
         }
         return true;
     }
 }
 
 void checkTotal(std::string fStr, std::string sStr, std::string tStr) {
-
     std::string totalStr = fStr + sStr + tStr;
 
     //проверка строк на общие требования
@@ -134,13 +163,14 @@ void checkTotal(std::string fStr, std::string sStr, std::string tStr) {
     //получение победителя по диагоналям
     char checkDiagWon = checkDiag(totalStr);
 
-
     if (checkStrTotal) {
-        if (checkWonStrings == 'X' || checkWonColumns == 'X' || checkDiagWon == 'X') {
+        if (checkWonStrings == 'I' || checkWonColumns == 'I' || checkDiagWon == 'I') {
+            std::cout << "Incorrect\n";
+        } else if (checkWonStrings == 'X' || checkWonColumns == 'X' || checkDiagWon == 'X') {
             std::cout << "Petya\n";
         } else if (checkWonStrings == 'O' || checkWonColumns == 'O' || checkDiagWon == 'O') {
             std::cout << "Vanya\n";
-        } else if (checkWonStrings == 'N' || checkWonColumns == 'N' || checkDiagWon == 'N') {
+        } else {
             std::cout << "Nobody\n";
         }
     } else {
@@ -174,6 +204,10 @@ int main() {
     checkTotal("0..",
                "...",
                "...");
+    std::cout << "Хотя бы одна победа для Вани)\n";
+    checkTotal("O.X",
+               "XOX",
+               "..O");
 
     return 0;
 }
