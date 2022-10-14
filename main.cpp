@@ -1,6 +1,7 @@
 #include <iostream>
 
-char checkQQQ(char wonChar, int countX, int countO) {
+//проверка соответствия победителя и кол-ва символов
+char checkWinCountSym(char wonChar, int countX, int countO) {
     if (wonChar == 'X' && countX > countO) {
         return wonChar;
     } else if (wonChar == 'O' && countX == countO) {
@@ -77,8 +78,7 @@ char checkDiag(std::string str) {
         }
     }
     wonChar = checkWin (countXWin, countOWin);
-    char ss = checkQQQ(wonChar, countX, countO);
-    return ss;
+    return checkWinCountSym(wonChar, countX, countO);;
 }
 
 //проверка столбцов на победителя
@@ -100,10 +100,8 @@ char checkWonCol(std::string str) {
             countOWin++;
         }
     }
-
     wonChar = checkWin (countXWin, countOWin);
-
-    return checkQQQ(wonChar, countX, countO);
+    return checkWinCountSym(wonChar, countX, countO);
 }
 
 //проверка строки на победителя
@@ -126,8 +124,7 @@ char checkWonStr(std::string str) {
         }
     }
     wonChar = checkWin (countXWin, countOWin);
-
-    return checkQQQ(wonChar, countX, countO);
+    return checkWinCountSym(wonChar, countX, countO);
 }
 
 //проверка строки на общие требования
@@ -178,11 +175,8 @@ void checkTotal(std::string fStr, std::string sStr, std::string tStr) {
     }
 }
 
-int main() {
-    std::string fStr, sStr, tStr;
-//    std::cout << "Enter result of game:" << std::endl;
-//    std::cin >> fStr >> sStr >> tStr;
-
+//проверка всех примеров их задачи
+void checkAll() {
     checkTotal("X..",
                "OXO",
                "OOO");
@@ -204,10 +198,18 @@ int main() {
     checkTotal("0..",
                "...",
                "...");
-    std::cout << "Хотя бы одна победа для Вани)\n";
+    std::cout << "*** Хотя бы одна победа для Вани)\n";
     checkTotal("O.X",
                "XOX",
                "..O");
+}
 
+int main() {
+    std::string fStr, sStr, tStr;
+//    std::cout << "Enter result of game:" << std::endl;
+//    std::cin >> fStr >> sStr >> tStr;
+
+    //проверка всех примеров из задачи
+    checkAll();
     return 0;
 }
